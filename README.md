@@ -2,7 +2,7 @@
 
 * Analogizer V1.0 [05/01/2024]: Added support for 2btn, 6btn PC Engine native game controllers and 5 Player Multi Tap
 
-Adapted to Analogizer by RndMnkIII.
+Adapted to Analogizer by [@RndMnkIII](https://github.com/RndMnkIII).
 Support native PCEngine/TurboGrafx-16 2btn, 6 btn gamepads and 5 player multitap using SNAC adapter
 and PC Engine cable harness (specific for Analogizer).
 
