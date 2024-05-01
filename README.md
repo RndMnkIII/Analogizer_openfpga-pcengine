@@ -1,4 +1,16 @@
-# PC Engine for Analogue Pocket
+#  PC Engine for Analogue Pocket with support for Analogizer-FPGA adapter
+
+* Analogizer V1.0 [05/01/2024]: Added support for 2btn, 6btn PC Engine native game controllers and 5 Player Multi Tap
+* 
+Adapted to Analogizer by RndMnkIII.
+Support native PCEngine/TurboGrafx-16 2btn, 6 btn gamepads and 5 player multitap using SNAC adapter
+and PC Engine cable harness (specific for Analogizer).
+
+See Analogizer repository:
+https://github.com/RndMnkIII/Analogizer
+
+Because using the Analogizer adapter you are free to mix native gamepads+SNAC Adapter+Analogizer with Pocket inputs and/or DOCK gamepads, you need to enable 'Use Turbo Tap' or 'Use 6 Button Ctrl' options in the Pocket Core Menu.
+Wether you are going to use native controls with SNAC or whether you are going to use the default controls of the Pocket or controls connected through the Dock. Later you have the "SNAC Controller Assignment" option that allows you to reassign the SNAC game controllers to the players you want, mixing them with non-SNAC controllers if you wish, or only use SNAC controllers. This depends on the type of controller and adapter you have, you will have the possibility of using 1,2 or up to 4 SNAC controllers. If your native PC Engine gamepads have Turbo buttons you don't need to enable the Core menu "Button I Turbo" or "Button II Turbo" options, directly turn on Turbo on the gamepad.
 
 Ported from the core originally developed by [Gregory Estrade](https://github.com/Torlus/FPGAPCE) and heavily modified by [@srg320](https://github.com/srg320) and [@greyrogue](https://github.com/greyrogue). Core icon based on TG-16 icon by [spiritualized1997](https://github.com/spiritualized1997). Latest upstream available at https://github.com/MiSTer-devel/TurboGrafx16_MiSTer
 

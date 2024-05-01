@@ -3,12 +3,12 @@
     "magic": "APF_VER_1",
     "metadata": {
       "platform_ids": ["pce"],
-      "shortname": "PC Engine",
-      "description": "PC Engine (known as TurboGrafx-16 in the US) by NEC",
+      "shortname": "PC Engine_Analogizer",
+      "description": "[Analogizer] PC Engine (known as TurboGrafx-16 in the US) by NEC",
       "author": "agg23",
-      "url": "https://github.com/agg23/openfpga-pcengine/",
-      "version": "0.3.0",
-      "date_release": "2022-11-08"
+      "url": "https://github.com/RndMnkIII/Analogizer_openfpga-pcengine/",
+      "version": "1.0",
+      "date_release": "2024-05-01"
     },
     "framework": {
       "target_product": "Analogue Pocket",
@@ -20,7 +20,7 @@
       },
       "hardware": {
         "link_port": false,
-        "cartridge_adapter": -1
+        "cartridge_adapter": 0
       },
       "chip32_vm": "chip32.bin"
     },
