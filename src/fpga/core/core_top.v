@@ -832,7 +832,22 @@ module core_top (
   //create aditional switch to blank Pocket screen.
   wire [23:0] video_rgb_pocket;
   assign video_rgb_pocket = (analogizer_video_type[3]) ? 24'h000000: vid_rgb_core;
- 
+
+    //Video synchronizer for Analogizer DAC
+    reg ce_pix_r;
+    reg csync_r;
+    reg blank_r;
+    reg [23:0] rgb_color_r;
+    always @(posedge clk_sys_42_95) begin
+        ce_pix_r <= ce_pix;
+        
+        if (!ce_pix_r && ce_pix) begin //rising edge
+            csync_r <= SYNC;
+            blank_r <= ANALOGIZER_DE;
+            rgb_color_r <= vid_rgb_core;
+        end
+    end
+
 //42_954_545
 openFPGA_Pocket_Analogizer #(.MASTER_CLK_FREQ(42_954_545)) analogizer (
 	.i_clk(clk_sys_42_95),
@@ -840,13 +855,13 @@ openFPGA_Pocket_Analogizer #(.MASTER_CLK_FREQ(42_954_545)) analogizer (
 	.i_ena(1'b1),
 	//Video interface
 	.analog_video_type(analogizer_video_type),
-  .R(vid_rgb_core[23:16]),
-	.G(vid_rgb_core[15:8]),
-	.B(vid_rgb_core[7:0]),
-  .BLANKn(ANALOGIZER_DE),
-	.Hsync(SYNC), //composite SYNC on HSync.
+  .R(rgb_color_r[23:16]),
+	.G(rgb_color_r[15:8]),
+	.B(rgb_color_r[7:0]),
+  .BLANKn(blank_r),
+	.Hsync(csync_r), //composite SYNC on HSync.
 	.Vsync(1'b1),
-	.video_clk(clk_vid),
+	.video_clk(clk_sys_42_95),
 
 	//SNAC interface
 	.conf_AB((snac_game_cont_type >= 5'd16)),              //0 conf. A(default), 1 conf. B (see graph above)
