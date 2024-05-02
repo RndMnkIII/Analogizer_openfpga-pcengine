@@ -835,18 +835,72 @@ module core_top (
 
     //Video synchronizer for Analogizer DAC
     reg ce_pix_r;
-    reg csync_r;
+    reg hsync_r, csync_r;
     reg blank_r;
     reg [23:0] rgb_color_r;
     always @(posedge clk_sys_42_95) begin
         ce_pix_r <= ce_pix;
         
         if (!ce_pix_r && ce_pix) begin //rising edge
+            hsync_r <= video_hs_core;
             csync_r <= SYNC;
             blank_r <= ANALOGIZER_DE;
             rgb_color_r <= vid_rgb_core;
         end
     end
+
+
+// SET PAL and NTSC TIMING and pass through status bits. ** YC must be enabled in the qsf file **
+wire [39:0] CHROMA_PHASE_INC;
+wire [26:0] COLORBURST_RANGE;
+wire YC_EN;
+wire PALFLAG;
+
+	parameter NTSC_REF = 3.579545;   
+	parameter PAL_REF = 4.43361875;
+	// Colorburst Lenth Calculation to send to Y/C Module, based on the CLK_VIDEO of the core
+	localparam [6:0] COLORBURST_START = (3.7 * (CLK_VIDEO_NTSC/NTSC_REF));
+	localparam [9:0] COLORBURST_NTSC_END = (9 * (CLK_VIDEO_NTSC/NTSC_REF)) + COLORBURST_START;
+	localparam [9:0] COLORBURST_PAL_END = (10 * (CLK_VIDEO_PAL/PAL_REF)) + COLORBURST_START;
+ 
+	// Parameters to be modifed
+  parameter CLK_VIDEO_NTSC = 42.954545; // Must be filled E.g XX.X Hz - CLK_VIDEO
+	parameter CLK_VIDEO_PAL = 42.954545; // Must be filled E.g XX.X Hz - CLK_VIDEO
+  //PAL CLOCK FREQUENCY SHOULD BE 42.56274
+	localparam [39:0] NTSC_PHASE_INC = 40'd91625960449; // ((NTSC_REF**2^40) / CLK_VIDEO_NTSC) - SNES Example;
+	localparam [39:0] PAL_PHASE_INC = 40'd114532461227; // ((PAL_REF*2^40) / CLK_VIDEO_PAL)- SNES Example;
+
+	// Send Parameters to Y/C Module
+	assign CHROMA_PHASE_INC = (analogizer_video_type == 4'd4) ? PAL_PHASE_INC : NTSC_PHASE_INC; 
+	assign YC_EN = (analogizer_video_type == 4'd3) || (analogizer_video_type == 4'd4);
+	assign PALFLAG = (analogizer_video_type == 4'd4); 
+ 	assign COLORBURST_RANGE = {COLORBURST_START, COLORBURST_NTSC_END, COLORBURST_PAL_END}; // Pass colorburst length
+
+	wire [23:0] yc_o;
+	wire yc_hs, yc_vs, yc_cs;
+	//wire [39:0] PhaseInc;
+	
+	wire [23:0] rgb_yc_sel;
+	assign rgb_yc_sel = YC_EN ? yc_o : rgb_color_r;
+
+	yc_out yc_out
+	(
+		.clk(clk_sys_42_95),
+		.PAL_EN(PALFLAG),
+		.PHASE_INC(CHROMA_PHASE_INC),
+		.COLORBURST_RANGE(COLORBURST_RANGE),
+		.MULFLAG(1'b0),
+		.CHRADD(5'd0), //fine tune 0-31
+		.CHRMUL(5'd0), //fine tune 0-31
+		.hsync(hsync_r),
+		.vsync(1'b1),
+		.csync(csync_r),
+		.dout(yc_o),
+		.din(rgb_color_r),
+		.hsync_o(yc_hs),
+		.vsync_o(),
+		.csync_o(yc_cs)
+	);
 
 //42_954_545
 openFPGA_Pocket_Analogizer #(.MASTER_CLK_FREQ(42_954_545)) analogizer (
@@ -855,11 +909,17 @@ openFPGA_Pocket_Analogizer #(.MASTER_CLK_FREQ(42_954_545)) analogizer (
 	.i_ena(1'b1),
 	//Video interface
 	.analog_video_type(analogizer_video_type),
-  .R(rgb_color_r[23:16]),
-	.G(rgb_color_r[15:8]),
-	.B(rgb_color_r[7:0]),
-  .BLANKn(blank_r),
-	.Hsync(csync_r), //composite SYNC on HSync.
+   // .R(rgb_color_r[23:16]),
+	// .G(rgb_color_r[15:8]),
+	// .B(rgb_color_r[7:0]),
+   // .BLANKn(blank_r),
+	// .Hsync(csync_r), //composite SYNC on HSync.
+   .R(rgb_yc_sel[23:16]),
+	.G(rgb_yc_sel[15:8]),
+	.B(rgb_yc_sel[7:0]),
+   .BLANKn(blank_r),
+	// .Hsync(csync_r), //composite SYNC on HSync.
+   .Hsync(YC_EN ? yc_cs : csync_r), //composite SYNC on HSync.
 	.Vsync(1'b1),
 	.video_clk(clk_sys_42_95),
 

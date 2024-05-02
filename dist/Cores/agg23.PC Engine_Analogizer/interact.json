@@ -236,6 +236,10 @@
               "name": "YPbPr"
             },
             {
+              "value": "0x0C00",
+              "name": "Y/C NTSC"
+            },
+            {
               "value": "0x2000",
               "name": "RGBS,Pocket OFF"
             },
@@ -246,6 +250,13 @@
             {
               "value": "0x2800",
               "name": "YPbPr,Pocket OFF"
+            },            {
+              "value": "0x2C00",
+              "name": "Y/C NTSC,Pocket OFF"
+            },
+            {
+              "value": "0x3000",
+              "name": "Y/C PAL,Pocket OFF"
             }
         ]
     }

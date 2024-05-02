@@ -227,7 +227,7 @@ module openFPGA_Pocket_Analogizer #(parameter MASTER_CLK_FREQ=50_000_000) (
 	wire [7:0] Yout, PrOut, PbOut;
 	always @(*) begin
 		case(analog_video_type)
-			4'h0, 4'h8: begin //RGBS
+			4'h0, 4'h8, 4'h3, 4'h4, 4'hB, 4'hC: begin //RGBS, Y/C modes
 				Rout = R[7:2];
 				Gout = G[7:2];
 				Bout = B[7:2];
