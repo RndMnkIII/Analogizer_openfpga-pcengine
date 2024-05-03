@@ -376,6 +376,12 @@ module core_top (
         32'h308: begin
           cd_audio_boost <= bridge_wr_data[0];
         end
+        32'h400: begin
+          yc_chroma_add <= bridge_wr_data[4:0];
+        end
+        32'h410: begin
+          yc_chroma_mult <= bridge_wr_data[4:0];
+        end   
         /*[ANALOGIZER_HOOK_BEGIN]*/
 				32'hF7000000: analogizer_settings  <=  bridge_wr_data[13:0];
 				/*[ANALOGIZER_HOOK_END]*/
@@ -662,6 +668,9 @@ module core_top (
 
   reg [31:0] reset_delay = 0;
 
+  reg [4:0] yc_chroma_add;
+  reg [4:0] yc_chroma_mult;
+
   // Sync
 
   wire turbo_tap_enable_s;
@@ -677,6 +686,24 @@ module core_top (
   wire cd_audio_boost_s;
   wire adpcm_audio_boost_s;
   wire [1:0] master_audio_boost_s;
+
+  wire [4:0] yc_chroma_add_s;
+  wire [4:0] yc_chroma_mult_s;
+
+
+  synch_3 #(
+      .WIDTH(8)
+  ) yc_s (
+      {
+        yc_chroma_add,
+        yc_chroma_mult
+      },
+      {
+        yc_chroma_add_s,
+        yc_chroma_mult_s
+      },
+      clk_sys_42_95
+  );
 
   synch_3 #(
       .WIDTH(14)
@@ -853,6 +880,8 @@ module core_top (
 // SET PAL and NTSC TIMING and pass through status bits. ** YC must be enabled in the qsf file **
 wire [39:0] CHROMA_PHASE_INC;
 wire [26:0] COLORBURST_RANGE;
+wire [4:0] CHROMA_ADD;
+wire [4:0] CHROMA_MULT;
 wire YC_EN;
 wire PALFLAG;
 
@@ -867,13 +896,15 @@ wire PALFLAG;
   parameter CLK_VIDEO_NTSC = 42.954545; // Must be filled E.g XX.X Hz - CLK_VIDEO
 	parameter CLK_VIDEO_PAL = 42.954545; // Must be filled E.g XX.X Hz - CLK_VIDEO
   //PAL CLOCK FREQUENCY SHOULD BE 42.56274
-	localparam [39:0] NTSC_PHASE_INC = 40'd91625960449; // ((NTSC_REF**2^40) / CLK_VIDEO_NTSC) - SNES Example;
+	localparam [39:0] NTSC_PHASE_INC = 40'd91_625_958_315; //d91_625_968_981; // ((NTSC_REF**2^40) / CLK_VIDEO_NTSC) - SNES Example;
 	localparam [39:0] PAL_PHASE_INC = 40'd114532461227; // ((PAL_REF*2^40) / CLK_VIDEO_PAL)- SNES Example;
 
 	// Send Parameters to Y/C Module
-	assign CHROMA_PHASE_INC = (analogizer_video_type == 4'd4) ? PAL_PHASE_INC : NTSC_PHASE_INC; 
-	assign YC_EN = (analogizer_video_type == 4'd3) || (analogizer_video_type == 4'd4);
-	assign PALFLAG = (analogizer_video_type == 4'd4); 
+	assign CHROMA_PHASE_INC = ((analogizer_video_type == 4'h4)|| (analogizer_video_type == 4'hC)) ? PAL_PHASE_INC : NTSC_PHASE_INC; 
+	assign YC_EN = (analogizer_video_type == 4'h3) || (analogizer_video_type == 4'h4) || (analogizer_video_type == 4'hB) || (analogizer_video_type == 4'hC);
+	assign PALFLAG = (analogizer_video_type == 4'h4) || (analogizer_video_type == 4'hC); 
+  assign CHROMA_ADD = yc_chroma_add_s;
+  assign CHROMA_MULT = yc_chroma_mult_s;
  	assign COLORBURST_RANGE = {COLORBURST_START, COLORBURST_NTSC_END, COLORBURST_PAL_END}; // Pass colorburst length
 
 	wire [23:0] yc_o;
@@ -890,8 +921,8 @@ wire PALFLAG;
 		.PHASE_INC(CHROMA_PHASE_INC),
 		.COLORBURST_RANGE(COLORBURST_RANGE),
 		.MULFLAG(1'b0),
-		.CHRADD(5'd0), //fine tune 0-31
-		.CHRMUL(5'd0), //fine tune 0-31
+		.CHRADD(CHROMA_ADD), //fine tune 0-31
+		.CHRMUL(CHROMA_MULT), //fine tune 0-31
 		.hsync(hsync_r),
 		.vsync(1'b1),
 		.csync(csync_r),
@@ -909,17 +940,12 @@ openFPGA_Pocket_Analogizer #(.MASTER_CLK_FREQ(42_954_545)) analogizer (
 	.i_ena(1'b1),
 	//Video interface
 	.analog_video_type(analogizer_video_type),
-   // .R(rgb_color_r[23:16]),
-	// .G(rgb_color_r[15:8]),
-	// .B(rgb_color_r[7:0]),
-   // .BLANKn(blank_r),
-	// .Hsync(csync_r), //composite SYNC on HSync.
-   .R(rgb_yc_sel[23:16]),
+  .R(rgb_yc_sel[23:16]),
 	.G(rgb_yc_sel[15:8]),
 	.B(rgb_yc_sel[7:0]),
-   .BLANKn(blank_r),
-	// .Hsync(csync_r), //composite SYNC on HSync.
-   .Hsync(YC_EN ? yc_cs : csync_r), //composite SYNC on HSync.
+  .BLANKn(blank_r),
+  .Hsync(YC_EN ? yc_cs : csync_r), //composite SYNC on HSync.
+
 	.Vsync(1'b1),
 	.video_clk(clk_sys_42_95),
 
