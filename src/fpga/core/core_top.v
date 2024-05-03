@@ -896,7 +896,7 @@ wire PALFLAG;
   parameter CLK_VIDEO_NTSC = 42.954545; // Must be filled E.g XX.X Hz - CLK_VIDEO
 	parameter CLK_VIDEO_PAL = 42.954545; // Must be filled E.g XX.X Hz - CLK_VIDEO
   //PAL CLOCK FREQUENCY SHOULD BE 42.56274
-	localparam [39:0] NTSC_PHASE_INC = 40'd91_625_958_315; //d91_625_968_981; // ((NTSC_REF**2^40) / CLK_VIDEO_NTSC) - SNES Example;
+	localparam [39:0] NTSC_PHASE_INC = 40'd91625968981; //d91_625_958_315; //d91_625_968_981; // ((NTSC_REF**2^40) / CLK_VIDEO_NTSC) - SNES Example;
 	localparam [39:0] PAL_PHASE_INC = 40'd114532461227; // ((PAL_REF*2^40) / CLK_VIDEO_PAL)- SNES Example;
 
 	// Send Parameters to Y/C Module
@@ -923,11 +923,14 @@ wire PALFLAG;
 		.MULFLAG(1'b0),
 		.CHRADD(CHROMA_ADD), //fine tune 0-31
 		.CHRMUL(CHROMA_MULT), //fine tune 0-31
-		.hsync(hsync_r),
+		//.hsync(hsync_r),
+    .hsync(video_hs_core),
 		.vsync(1'b1),
-		.csync(csync_r),
+		//.csync(csync_r),
+    .csync(SYNC),
 		.dout(yc_o),
-		.din(rgb_color_r),
+		//.din(rgb_color_r),
+    .din(vid_rgb_core),
 		.hsync_o(yc_hs),
 		.vsync_o(),
 		.csync_o(yc_cs)
