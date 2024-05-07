@@ -7,8 +7,8 @@
       "description": "[Analogizer] PC Engine (known as TurboGrafx-16 in the US) by NEC",
       "author": "agg23",
       "url": "https://github.com/RndMnkIII/Analogizer_openfpga-pcengine/",
-      "version": "1.4",
-      "date_release": "2024-05-03"
+      "version": "1.5",
+      "date_release": "2024-05-08"
     },
     "framework": {
       "target_product": "Analogue Pocket",

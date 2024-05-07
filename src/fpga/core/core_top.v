@@ -756,8 +756,6 @@ module core_top (
     snac_game_cont_type   = analogizer_settings_s[4:0];
     snac_cont_assignment  = analogizer_settings_s[9:6];
     analogizer_video_type = analogizer_settings_s[13:10];
-    // DBG_CSYNC          = analogizer_settings_s[28:25];
-    // DBG_DE             = analogizer_settings_s[29];
   end
 
   //*** Analogizer Interface V1.1 ***
@@ -765,12 +763,6 @@ module core_top (
   reg [3:0] analogizer_video_type;
   reg [4:0] snac_game_cont_type /* synthesis keep */;
   reg [3:0] snac_cont_assignment /* synthesis keep */;
-  // reg [3:0] DBG_CSYNC;
-  // reg DBG_DE;
-  // wire BtnCasAplusSEL = 0;
-  // wire PauseAsSelplusStart = 0;
-  // wire ShowTestPattern = 0;
-
   
   //switch between Analogizer SNAC and Pocket Controls for P1-P4 (P3,P4 when uses PCEngine Multitap)
   wire [15:0] p1_btn, p2_btn, p3_btn, p4_btn;
@@ -837,22 +829,8 @@ module core_top (
     end
   end
 
-  //wire clk_vid = video_rgb_clock; //video_rgb_clock; //Fixed one bit shift error on RGB channels.
-  wire clk_vid = ce_pix; //video_rgb_clock; //Fixed one bit shift error on RGB channels.
+  //wire clk_vid = ce_pix; //video_rgb_clock; //Fixed one bit shift error on RGB channels.
 
-  // reg SYNC;
-  // reg DBG_ANALOGIZER_DE;
-  // always @(posedge clk_sys_21_48) begin
-  //   case(DBG_CSYNC)
-  //     4'd0: SYNC <= ~^{video_hs_snes, video_vs_snes}; //XNOR
-  //     4'd1: SYNC <= &{video_hs_snes, video_vs_snes};  //AND
-  //     4'd2: SYNC <= ^{video_hs_snes, video_vs_snes};  //XOR
-  //     4'd4: SYNC <= |{video_hs_snes, video_vs_snes};  //OR
-  //     default: SYNC <= ^{video_hs_snes, video_vs_snes}; //DEFAULT: XOR
-  //   endcase
-
-  //   DBG_ANALOGIZER_DE <= (DBG_DE) ? ~ANALOGIZER_DE : ANALOGIZER_DE;
-  // end
   wire SYNC = ~^{video_hs_core, video_vs_core};
   wire  ANALOGIZER_DE = ~(h_blank || v_blank);
 
@@ -862,13 +840,14 @@ module core_top (
 
     //Video synchronizer for Analogizer DAC
     reg ce_pix_r;
-    reg hsync_r, csync_r;
+    reg vsync_r, hsync_r, csync_r;
     reg blank_r;
     reg [23:0] rgb_color_r;
     always @(posedge clk_sys_42_95) begin
         ce_pix_r <= ce_pix;
         
         if (!ce_pix_r && ce_pix) begin //rising edge
+            vsync_r <= video_vs_core;
             hsync_r <= video_hs_core;
             csync_r <= SYNC;
             blank_r <= ANALOGIZER_DE;
@@ -909,7 +888,6 @@ wire PALFLAG;
 
 	wire [23:0] yc_o;
 	wire yc_hs, yc_vs, yc_cs;
-	//wire [39:0] PhaseInc;
 	
 	wire [23:0] rgb_yc_sel;
 	assign rgb_yc_sel = YC_EN ? yc_o : rgb_color_r;
@@ -925,14 +903,13 @@ wire PALFLAG;
 		.CHRMUL(CHROMA_MULT), //fine tune 0-31
 		//.hsync(hsync_r),
     .hsync(video_hs_core),
-		.vsync(1'b1),
-		//.csync(csync_r),
+		.vsync(video_vs_core),
     .csync(SYNC),
 		.dout(yc_o),
 		//.din(rgb_color_r),
     .din(vid_rgb_core),
 		.hsync_o(yc_hs),
-		.vsync_o(),
+		.vsync_o(yc_vs),
 		.csync_o(yc_cs)
 	);
 
@@ -947,11 +924,11 @@ openFPGA_Pocket_Analogizer #(.MASTER_CLK_FREQ(42_954_545)) analogizer (
 	.G(rgb_yc_sel[15:8]),
 	.B(rgb_yc_sel[7:0]),
   .BLANKn(blank_r),
-  .Hsync(YC_EN ? yc_cs : csync_r), //composite SYNC on HSync.
-
-	.Vsync(1'b1),
+  .Csync(YC_EN ? yc_cs : csync_r), //composite SYNC on HSync.
+  .Hsync(YC_EN ? yc_hs : hsync_r),
+	.Vsync(YC_EN ? yc_vs : vsync_r),
 	.video_clk(clk_sys_42_95),
-
+  .ce_divider(3'd7), //div8
 	//SNAC interface
 	.conf_AB((snac_game_cont_type >= 5'd16)),              //0 conf. A(default), 1 conf. B (see graph above)
 	.game_cont_type(snac_game_cont_type), //0-15 Conf. A, 16-31 Conf. B

@@ -240,6 +240,10 @@
               "name": "Y/C NTSC"
             },
             {
+              "value": "0x1400",
+              "name": "Scandoubler RGBHV"
+            },
+            {
               "value": "0x2000",
               "name": "RGBS,Pocket OFF"
             },
@@ -253,6 +257,10 @@
             },            {
               "value": "0x2C00",
               "name": "Y/C NTSC,Pocket OFF"
+            },
+            {
+              "value": "0x3400",
+              "name": "Scandoubler,Pocket OFF"
             }
         ]
     },

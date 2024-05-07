@@ -3,6 +3,7 @@
 * Analogizer V1.0 [05/01/2024]: Added support for 2btn, 6btn PC Engine native game controllers and 5 Player Multi Tap
 * Analogizer v1.2 [05/02/2024]: Added experimental Y/C and composite video output.
 * Analogizer v1.3 [05/03/2024]: Fixed Y/C and composite video output.
+* Analogicer v1.5 [05/08/2024]: Added Scandoubler SVGA video output.
 
 Adapted to Analogizer by [@RndMnkIII](https://github.com/RndMnkIII).
 Support native PCEngine/TurboGrafx-16 2btn, 6 btn gamepads and 5 player multitap using SNAC adapter
@@ -10,6 +11,8 @@ and PC Engine cable harness (specific for Analogizer). Many thanks to [Mike Simo
 
 For output Y/C and composite video you need to select in Pocket's Menu: `Analogizer Video Out > Y/C NTSC` or `Analogizer Video Out > Y/C NTSC,Pocket OFF`. You can tune the phase accumulator
 with `Chroma Add` and `Chroma Multiply` sliders adjusting values between 0 and 31. Find the best match for your screen.
+
+For output Scandoubler SVGA video you need to select in Pocket's Menu: `Analogizer Video Out > Scandoubler RGBHV`.
 
 You will need to connect an active VGA to Y/C adapter to the VGA port (the 5V power is provided by VGA pin 9). I'll recomend one of these:
 * [MiSTerAddons - Active Y/C Adapter](https://misteraddons.com/collections/parts/products/yc-active-encoder-board/)

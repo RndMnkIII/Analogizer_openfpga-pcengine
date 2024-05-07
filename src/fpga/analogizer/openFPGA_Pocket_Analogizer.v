@@ -154,10 +154,14 @@ module openFPGA_Pocket_Analogizer #(parameter MASTER_CLK_FREQ=50_000_000) (
 	input wire [7:0] R,
 	input wire [7:0] G,
 	input wire [7:0] B,
+	input wire Hblank,
+	input wire Vblank,
 	input wire BLANKn,
 	input wire Hsync,
 	input wire Vsync,
+	input wire Csync,
 	input wire video_clk,
+	input wire [2:0] ce_divider, //For scandoubler: 0 - clk_sys/4, 1 - clk_sys/2, 2 - clk_sys/3, 3 - clk_sys/4, etc.
 	//SNAC interface
     input wire conf_AB,              //0 conf. A(default), 1 conf. B (see graph above)
     input wire [4:0] game_cont_type, //0-15 Conf. A, 16-31 Conf. B
@@ -225,13 +229,17 @@ module openFPGA_Pocket_Analogizer #(parameter MASTER_CLK_FREQ=50_000_000) (
 	reg [5:0] Rout, Gout, Bout;
 	reg HsyncOut, VsyncOut, BLANKnOut;
 	wire [7:0] Yout, PrOut, PbOut;
+	wire [5:0] R_Sd, G_Sd, B_Sd;
+	wire Hsync_Sd, Vsync_Sd;
+	wire Hblank_Sd, Vblank_Sd;
+	wire BLANKn_SD = ~(Hblank_Sd || Vblank_Sd);
 	always @(*) begin
 		case(analog_video_type)
 			4'h3, 4'h4, 4'hB, 4'hC: begin//Y/C modes 
 				Rout = R[7:2];
 				Gout = G[7:2];
 				Bout = B[7:2];
-				HsyncOut = Hsync;
+				HsyncOut = Csync;
 				VsyncOut = 1'b1;
 				BLANKnOut = 1'b1;
 			end
@@ -239,7 +247,7 @@ module openFPGA_Pocket_Analogizer #(parameter MASTER_CLK_FREQ=50_000_000) (
 				Rout = R[7:2];
 				Gout = G[7:2];
 				Bout = B[7:2];
-				HsyncOut = Hsync;
+				HsyncOut = Csync;
 				VsyncOut = 1'b1;
 				BLANKnOut = BLANKn;
 			end
@@ -248,7 +256,7 @@ module openFPGA_Pocket_Analogizer #(parameter MASTER_CLK_FREQ=50_000_000) (
 				Gout = G[7:2];
 				Bout = B[7:2];
 				HsyncOut = 1'b1;
-				VsyncOut = Hsync; //to DAC SYNC pin, SWITCH SOG ON
+				VsyncOut = Csync; //to DAC SYNC pin, SWITCH SOG ON
 				BLANKnOut = BLANKn;
 			end
 			4'h2, 4'hA: begin //YPbPr
@@ -259,11 +267,19 @@ module openFPGA_Pocket_Analogizer #(parameter MASTER_CLK_FREQ=50_000_000) (
 				VsyncOut = YPbPr_sync; //to DAC SYNC pin, SWITCH SOG ON
 				BLANKnOut = 1'b1; // YPbPr_blank; //FIX with 1'b0 ???
 			end
+			4'h5, 4'hD: begin //Scandoubler modes
+				Rout = R_Sd;
+				Gout = G_Sd;
+				Bout = B_Sd;
+				HsyncOut = Hsync_Sd;
+				VsyncOut = Vsync_Sd;
+				BLANKnOut = BLANKn_SD;
+			end
 			default: begin
 				Rout = R[7:2];
 				Gout = G[7:2];
 				Bout = B[7:2];
-				HsyncOut = Hsync;
+				HsyncOut = Csync;
 				VsyncOut = 1'b1;
 				BLANKnOut = BLANKn;
 			end
@@ -278,7 +294,7 @@ module openFPGA_Pocket_Analogizer #(parameter MASTER_CLK_FREQ=50_000_000) (
 
 		.hsync(1'b0),
 		.vsync(1'b0),
-		.csync(Hsync),
+		.csync(Csync),
 		.de(BLANKn),
 
 		.din({R,G,B}),
@@ -288,6 +304,36 @@ module openFPGA_Pocket_Analogizer #(parameter MASTER_CLK_FREQ=50_000_000) (
 		.vsync_o(),
 		.csync_o(YPbPr_sync),
 		.de_o(YPbPr_blank)
+	);
+
+	scandoubler sc_video
+	(
+		// system interface
+		.clk_sys(video_clk),
+		.bypass(1'b0),
+
+		// Pixelclock
+		.ce_divider(ce_divider), // 0 - clk_sys/4, 1 - clk_sys/2, 2 - clk_sys/3, 3 - clk_sys/4, etc.
+		.pixel_ena(), //output
+		.scanlines(2'd0), // scanlines (00-none 01-25% 10-50% 11-75%)
+
+		// shifter video interface
+		.hb_in(Hblank),
+		.vb_in(Vblank),
+		.hs_in(Hsync),
+		.vs_in(Vsync),
+		.r_in(R[7:2]),
+		.g_in(G[7:2]),
+		.b_in(B[7:2]),
+
+		// output interface
+		.hb_out(Hblank_Sd),
+		.vb_out(Vblank_Sd),
+		.hs_out(Hsync_Sd),
+		.vs_out(Vsync_Sd),
+		.r_out(R_Sd),
+		.g_out(G_Sd),
+		.b_out(B_Sd)
 	);
 
 	//infer tri-state buffers for cartridge data signals
