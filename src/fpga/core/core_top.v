@@ -381,6 +381,9 @@ module core_top (
         end
         32'h410: begin
           yc_chroma_mult <= bridge_wr_data[4:0];
+        end
+        32'h420: begin
+          yc_cvbs <= bridge_wr_data[0];
         end   
         /*[ANALOGIZER_HOOK_BEGIN]*/
 				32'hF7000000: analogizer_settings  <=  bridge_wr_data[13:0];
@@ -670,7 +673,7 @@ module core_top (
 
   reg [4:0] yc_chroma_add;
   reg [4:0] yc_chroma_mult;
-
+  reg yc_cvbs;
   // Sync
 
   wire turbo_tap_enable_s;
@@ -689,18 +692,21 @@ module core_top (
 
   wire [4:0] yc_chroma_add_s;
   wire [4:0] yc_chroma_mult_s;
+  wire yc_cvbs_s;
 
 
   synch_3 #(
-      .WIDTH(8)
+      .WIDTH(9)
   ) yc_s (
       {
         yc_chroma_add,
-        yc_chroma_mult
+        yc_chroma_mult,
+        yc_cvbs
       },
       {
         yc_chroma_add_s,
-        yc_chroma_mult_s
+        yc_chroma_mult_s,
+        yc_cvbs_s
       },
       clk_sys_42_95
   );
@@ -896,6 +902,7 @@ wire PALFLAG;
 	(
 		.clk(clk_sys_42_95),
 		.PAL_EN(PALFLAG),
+    .CVBS(yc_cvbs_s),
 		.PHASE_INC(CHROMA_PHASE_INC),
 		.COLORBURST_RANGE(COLORBURST_RANGE),
 		.MULFLAG(1'b0),

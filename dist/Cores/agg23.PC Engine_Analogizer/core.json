@@ -4,11 +4,11 @@
     "metadata": {
       "platform_ids": ["pce"],
       "shortname": "PC Engine_Analogizer",
-      "description": "[Analogizer] PC Engine (known as TurboGrafx-16 in the US) by NEC",
+      "description": "[Analogizer] PC Engine with RGBS,RGsB,YPbPr,Y/C,CVBS,SVGA video output",
       "author": "agg23",
       "url": "https://github.com/RndMnkIII/Analogizer_openfpga-pcengine/",
-      "version": "1.5",
-      "date_release": "2024-05-08"
+      "version": "1.6",
+      "date_release": "2024-05-14"
     },
     "framework": {
       "target_product": "Analogue Pocket",
