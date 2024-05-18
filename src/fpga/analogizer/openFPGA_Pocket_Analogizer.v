@@ -186,14 +186,14 @@ module openFPGA_Pocket_Analogizer #(parameter MASTER_CLK_FREQ=50_000_000) (
 				BLANKnOut = 1'b1;
 			end
 
-			4'h6, 4'h7, 4'hE, 4'hF: begin// Y/C SOG Modes (works only for Analogizer R2 Adapters)
-				Rout = yc_o[23:18];
-				Gout = yc_o[15:10];
-				Bout = yc_o[7:2];
-				HsyncOut = yc_cs;
-				VsyncOut = yc_cs;
-				BLANKnOut = 1'b1;
-			end
+			// 4'h6, 4'h7, 4'hE, 4'hF: begin// Y/C SOG Modes (works only for Analogizer R2 Adapters)
+			// 	Rout = yc_o[23:18];
+			// 	Gout = yc_o[15:10];
+			// 	Bout = yc_o[7:2];
+			// 	HsyncOut = yc_cs;
+			// 	VsyncOut = yc_cs;
+			// 	BLANKnOut = 1'b1;
+			// end
 			4'h1, 4'h9: begin //RGsB
 				Rout = R[7:2]&{6{BLANKn}};
 				Gout = G[7:2]&{6{BLANKn}};
