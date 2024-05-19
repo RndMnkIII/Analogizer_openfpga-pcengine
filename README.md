@@ -21,7 +21,7 @@ The core can output RGBS, RGsB, YPbPr, Y/C and SVGA scandoubler (50% scanlines) 
 
 * **Analogizer** is responsible for generating the correct encoded Y/C signals from RGB and outputs to R,G pins of VGA port. Also redirects the CSync to VGA HSync pin.
 The required external Y/C adapter that connects to VGA port is responsible for output Svideo o composite video signal using his internal electronics. Oficially
-only the Mike Simone Y/C adapters (active or passive) designs will be supported by Analogizer and will be the ones to use.
+only the Mike Simone Y/C adapters (active) designs will be supported by Analogizer and will be the ones to use.
 
 Support native PCEngine/TurboGrafx-16 2btn, 6 btn gamepads and 5 player multitap using SNAC adapter
 and PC Engine cable harness (specific for Analogizer). Many thanks to [Mike Simone](https://github.com/MikeS11/MiSTerFPGA_YC_Encoder) for his great Y/C Encoder project.
