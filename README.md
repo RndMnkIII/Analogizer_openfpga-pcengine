@@ -36,9 +36,6 @@ You will need to connect an active VGA to Y/C adapter to the VGA port (the 5V po
 * [MikeS11 Active VGA to Composite / S-Video](https://ultimatemister.com/product/mikes11-active-composite-svideo/)
 * [Active VGA->Composite/S-Video adapter](https://antoniovillena.com/product/mikes1-vga-composite-adapter/)
 
-Or this passive one:
-* [MikeS11 Y/C Passive Adapter](https://ultimatemister.com/product/mikes1-yc-passive-board/)
-
 Using another type of Y/C adapter not tested to be used with Analogizer will not receive official support.
 
 I'll recomend also read this guide for MiSTer FPGA but can applied to Analogizer:
