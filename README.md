@@ -5,8 +5,8 @@
 * Analogizer v1.3   [05/03/2024]: Fixed Y/C and composite video output.
 * Analogizer v1.5   [05/08/2024]: Added Scandoubler SVGA video output.
 * Analogizer v1.6   [05/14/2024]: Added CBVS mode for Passive Y/C Adapters.
-* Analogizer v1.6.1 [05/14/2024]: Unified interface for Y/C output. You don't need the CVBS mode anymmore. All supported Y/C adapters use the same interface.
-
+* Analogizer v1.6.1 [05/18/2024]: Unified interface for Y/C output. You don't need the CVBS mode anymmore. All supported Y/C adapters use the same interface.
+* Analogizer v1.6.2 [05/28/2024]: Fixed YPbPr video output.
 Adapted to Analogizer by [@RndMnkIII](https://github.com/RndMnkIII) based on **agg23** PC Engine for Analogue Pocket Core.
 
 The core can output RGBS, RGsB, YPbPr, Y/C and SVGA scandoubler (50% scanlines) video signals.

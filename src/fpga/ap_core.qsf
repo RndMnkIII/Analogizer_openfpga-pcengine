@@ -42,7 +42,7 @@
 # ========================
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 18.1.1
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "21:31:36  JANUARY 22, 2020"
-set_global_assignment -name LAST_QUARTUS_VERSION "18.1.0 Standard Edition"
+set_global_assignment -name LAST_QUARTUS_VERSION "21.1.0 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name PRE_FLOW_SCRIPT_FILE "quartus_sh:apf/build_id_gen.tcl"
 set_global_assignment -name SMART_RECOMPILE ON
@@ -741,6 +741,7 @@ set_global_assignment -name NUM_PARALLEL_PROCESSORS 6
 set_global_assignment -name SEED 2
 set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT EXTRA
 set_global_assignment -name ALM_REGISTER_PACKING_EFFORT LOW
+set_global_assignment -name QSYS_FILE unnamed.qsys
 set_global_assignment -name QIP_FILE analogizer/analogizer.qip
 set_global_assignment -name VERILOG_FILE core/linebuffer.v
 set_global_assignment -name SYSTEMVERILOG_FILE core/rtl/sdram.sv

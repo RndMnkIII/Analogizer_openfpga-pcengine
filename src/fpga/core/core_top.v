@@ -845,16 +845,18 @@ module core_top (
     //Video synchronizer for Analogizer DAC
     // reg ce_pix_r;
     // reg vsync_r, hsync_r, csync_r;
-    // reg blank_r;
+    // reg blank_r, h_blank_r, v_blank_r;
     // reg [23:0] rgb_color_r;
     // always @(posedge clk_sys_42_95) begin
     //     ce_pix_r <= ce_pix;
         
-    //     if (!ce_pix_r && ce_pix) begin //rising edge
+    //     if (ce_pix_r && !ce_pix) begin //falling edge
     //         vsync_r <= video_vs_core;
     //         hsync_r <= video_hs_core;
     //         csync_r <= SYNC;
     //         blank_r <= ANALOGIZER_DE;
+    //         h_blank_r <= h_blank;
+    //         v_blank_r <= v_blank;
     //         rgb_color_r <= vid_rgb_core;
     //     end
     // end
@@ -889,7 +891,13 @@ wire PALFLAG;
   assign CHROMA_MULT = 5'd0; //yc_chroma_mult_s;
  	assign COLORBURST_RANGE = {COLORBURST_START, COLORBURST_NTSC_END, COLORBURST_PAL_END}; // Pass colorburst length
 
-
+//  wire analogizer_clk_vid;
+//	unnamed u0 (
+//		.inclk1x   (clk_sys_42_95),   //  altclkctrl_input.inclk1x 
+//		.inclk0x   (clk_vid_7_159),   //                  .inclk0x
+//		.clkselect ((analogizer_video_type == 4'h3) || (analogizer_video_type == 4'hB)), //                  .clkselect
+//		.outclk    (analogizer_clk_vid)     // altclkctrl_output.outclk
+//	);
 
 //42_954_545
 openFPGA_Pocket_Analogizer #(.MASTER_CLK_FREQ(42_954_545)) analogizer (
@@ -907,7 +915,18 @@ openFPGA_Pocket_Analogizer #(.MASTER_CLK_FREQ(42_954_545)) analogizer (
   .Csync(SYNC), //composite SYNC on HSync.
   .Hsync(video_hs_core),
 	.Vsync(video_vs_core),
-	.video_clk(clk_sys_42_95),
+  .video_clk(clk_sys_42_95),
+  // .R(rgb_color_r[23:16]),
+	// .G(rgb_color_r[15:8]),
+	// .B(rgb_color_r[7:0]),
+  // .Hblank(h_blank_r),
+  // .Vblank(v_blank_r),
+  // .BLANKn(blank_r),
+  // .Csync(csync_r), //composite SYNC on HSync.
+  // .Hsync(hsync_r),
+	// .Vsync(vsync_r),
+	// .video_clk(ce_pix),
+  //,
   //Video Y/C Encoder interface
   .PALFLAG(1'b0),
   //.CVBS(yc_cvbs_s),
@@ -1121,7 +1140,7 @@ openFPGA_Pocket_Analogizer #(.MASTER_CLK_FREQ(42_954_545)) analogizer (
   wire clk_vid_42_95_90deg;
   // wire clk_vid_10_738;
   // wire clk_vid_10_738_90deg;
-  // wire clk_vid_7_159;
+  wire clk_vid_7_159;
   // wire clk_vid_7_159_90deg;
 
   wire pll_core_locked;
@@ -1135,7 +1154,7 @@ openFPGA_Pocket_Analogizer #(.MASTER_CLK_FREQ(42_954_545)) analogizer (
       .outclk_2(clk_vid_42_95_90deg),
       // .outclk_2(clk_vid_10_738),
       // .outclk_3(clk_vid_10_738_90deg),
-      // .outclk_4(clk_vid_7_159),
+      .outclk_4(clk_vid_7_159),
       // .outclk_5(clk_vid_7_159_90deg),
 
       .locked(pll_core_locked)
