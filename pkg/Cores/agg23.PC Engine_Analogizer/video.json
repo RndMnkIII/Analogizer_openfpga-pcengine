@@ -1,0 +1,81 @@
+{
+  "video": {
+    "magic": "APF_VER_1",
+    "scaler_modes": [
+      {
+        "width": 256,
+        "height": 240,
+        "aspect_w": 128,
+        "aspect_h": 105,
+        "rotation": 0,
+        "mirror": 0
+      },
+      {
+        "width": 256,
+        "height": 224,
+        "aspect_w": 64,
+        "aspect_h": 49,
+        "rotation": 0,
+        "mirror": 0
+      },
+      {
+        "width": 360,
+        "height": 240,
+        "aspect_w": 128,
+        "aspect_h": 105,
+        "rotation": 0,
+        "mirror": 0
+      },
+      {
+        "width": 360,
+        "height": 224,
+        "aspect_w": 64,
+        "aspect_h": 49,
+        "rotation": 0,
+        "mirror": 0
+      },
+      {
+        "width": 512,
+        "height": 240,
+        "aspect_w": 128,
+        "aspect_h": 105,
+        "rotation": 0,
+        "mirror": 0
+      },
+      {
+        "width": 512,
+        "height": 224,
+        "aspect_w": 64,
+        "aspect_h": 49,
+        "rotation": 0,
+        "mirror": 0
+      }
+    ],
+    "display_modes": [
+      {
+        "id": "0x71"
+      },
+      {
+        "id": "0x72"
+      },
+      {
+        "id": "0x10"
+      },
+      {
+        "id": "0x20"
+      },
+      {
+        "id": "0x30"
+      },
+      {
+        "id": "0x40"
+      },
+      {
+        "id": "0xE0"
+      },
+      {
+        "id": "0xE1"
+      }
+    ]
+  }
+}
